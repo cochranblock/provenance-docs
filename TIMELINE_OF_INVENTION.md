@@ -10,6 +10,14 @@
 
 ## Entries
 
+### 2026-03-27 — Exopack Integration: Two-Binary Model with TRIPLE SIMS
+
+**What:** Added exopack as optional dependency behind `tests` feature. Created `provenance-docs-test` binary using `exopack::triple_sims::f60` to run the doc validation gate 3x. Added `lib.rs` with `f30` that validates TOI fields, POA sections, and required doc existence. Updated POA with Build Output, Screenshots, and self-verification commands.
+**Why:** Every CochranBlock repo uses the two-binary model. provenance-docs had a stub `main.rs` with no test gate. Now it has the same quality gate as the other 11 repos — the test binary IS the CI pipeline.
+**Commit:** 783564d
+**AI Role:** AI implemented the exopack wiring (Cargo.toml features, test binary, f30 validation logic) and expanded POA to match whitepaper spec. Human directed the two-binary architecture, defined which TOI fields and POA sections f30 should validate, and verified TRIPLE SIMS 3/3 pass.
+**Proof:** `cargo run --bin provenance-docs-test --features tests` — TRIPLE SIMS 3/3
+
 ### 2026-03-26 — Provenance Docs Whitepaper + Framework Specification
 
 **What:** Published whitepaper defining the Provenance Docs framework — a commit-integrated documentation system for AI-piloted software development. Includes Timeline of Invention (TOI) and Proof of Artifacts (POA) specifications, CDRL mapping, SBOM integration proposal, and SBIR Phase I/II work plan.

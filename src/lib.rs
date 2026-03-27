@@ -32,7 +32,7 @@ pub fn f30() -> i32 {
 
     // Stage 3: POA contains required sections
     let poa = std::fs::read_to_string(root.join("PROOF_OF_ARTIFACTS.md")).unwrap_or_default();
-    for section in ["## Architecture", "## Validation", "## How to Verify"] {
+    for section in ["## Architecture", "## Build Output", "## Validation", "## Screenshots", "## How to Verify"] {
         if poa.contains(section) {
             println!("  OK  POA section {section}");
         } else {

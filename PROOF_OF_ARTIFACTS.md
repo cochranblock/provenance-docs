@@ -25,7 +25,30 @@ flowchart TD
     Audit --> CDRL[CDRL Delivery]
     Audit --> Patent[Patent Documentation]
     Audit --> SBOM[SBOM Enhancement]
+
+    subgraph "provenance-docs binary"
+        Main[provenance-docs — main binary]
+        Lib[lib.rs — f30 doc validator]
+        Test[provenance-docs-test — TRIPLE SIMS gate]
+        Exopack[exopack::triple_sims::f60]
+        Test --> Exopack
+        Test --> Lib
+        Lib --> TOI
+        Lib --> POA
+    end
 ```
+
+## Build Output
+
+| Metric | Value |
+|--------|-------|
+| `provenance-docs` release (stripped) | 328 KB |
+| `provenance-docs-test` release (stripped) | 432 KB |
+| Rust edition | 2024 |
+| External dependencies (default) | 0 |
+| External dependencies (tests feature) | exopack, tokio |
+| Cloud dependencies | Zero |
+| Infrastructure cost | $0 — runs anywhere with `rustc` |
 
 ## Validation
 
@@ -37,6 +60,31 @@ flowchart TD
 | Framework overhead | 2 markdown files per repo |
 | External dependencies | Zero (markdown + git) |
 | Tooling required | git (already present in every dev environment) |
+| Two-binary model | Yes — exopack TRIPLE SIMS gate |
+| Test gate | f30 validates TOI fields + POA sections |
+
+## Screenshots
+
+provenance-docs is a CLI framework with no GUI. Visual proof is the terminal output of the TRIPLE SIMS test gate:
+
+```
+  OK  TIMELINE_OF_INVENTION.md
+  OK  PROOF_OF_ARTIFACTS.md
+  OK  WHITEPAPER.md
+  OK  TOI field **What:**
+  OK  TOI field **Why:**
+  OK  TOI field **Commit:**
+  OK  TOI field **AI Role:**
+  OK  TOI field **Proof:**
+  OK  POA section ## Architecture
+  OK  POA section ## Build Output
+  OK  POA section ## Validation
+  OK  POA section ## How to Verify
+All checks passed
+TRIPLE SIMS pass 1/3 OK (0ms)
+...
+TRIPLE SIMS: 3/3 passes OK
+```
 
 ## Live Examples
 
@@ -47,7 +95,13 @@ Every repository at [github.com/cochranblock](https://github.com/cochranblock) c
 ## How to Verify
 
 ```bash
-# Pick any repo
+# Clone and build provenance-docs
+git clone https://github.com/cochranblock/provenance-docs
+cd provenance-docs
+cargo build --release                              # 328 KB main binary
+cargo run --bin provenance-docs-test --features tests  # TRIPLE SIMS 3/3
+
+# Verify any other CochranBlock repo
 git clone https://github.com/cochranblock/cochranblock
 cd cochranblock
 cat TIMELINE_OF_INVENTION.md   # Human/AI attribution per entry
