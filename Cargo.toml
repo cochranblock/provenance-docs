@@ -2,5 +2,25 @@
 name = "provenance-docs"
 version = "0.1.0"
 edition = "2024"
+default-run = "provenance-docs"
+
+[features]
+default = []
+tests = ["exopack", "dep:tokio"]
+
+[lib]
+name = "provenance_docs"
+path = "src/lib.rs"
+
+[[bin]]
+name = "provenance-docs"
+path = "src/main.rs"
+
+[[bin]]
+name = "provenance-docs-test"
+path = "src/bin/provenance-docs-test.rs"
+required-features = ["tests"]
 
 [dependencies]
+exopack = { path = "../exopack", optional = true, features = ["triple_sims"] }
+tokio = { version = "1", features = ["rt", "macros"], optional = true }
