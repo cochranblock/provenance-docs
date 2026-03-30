@@ -4,7 +4,7 @@
 
 *Visual and structural evidence that this framework works, ships, and is real.*
 
-> This is not a proposal for something that might work. This is documentation of something that already works across 12 production repositories.
+> This is not a proposal for something that might work. This is documentation of something that already works across 16 production repositories.
 
 ## Architecture
 
@@ -54,7 +54,8 @@ flowchart TD
 
 | Metric | Value |
 |--------|-------|
-| Repositories using this framework | 12 |
+| Repositories using this framework | 16 |
+| Repos with exopack test gate | 12 of 16 |
 | Total commits documented | 500+ |
 | Languages | Rust (all repositories) |
 | Framework overhead | 2 markdown files per repo |

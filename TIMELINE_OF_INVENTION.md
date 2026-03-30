@@ -10,6 +10,14 @@
 
 ## Entries
 
+### 2026-03-27 — Whitepaper Expansion: 16 Repos, TRIPLE SIMS Coverage, Programmatic Enforcement
+
+**What:** Updated whitepaper from 12 to 16 repositories. Added full project table with per-repo exopack feature coverage. Added Section 3.5 documenting the two-binary model and TRIPLE SIMS as programmatic enforcement of documentation compliance. Updated Phase I tooling status to reflect existing f30 validator. Updated POA validation metrics.
+**Why:** The whitepaper was written when 12 repos existed. Four more shipped since (ronin-sites, railgun, ironhive, provenance-docs itself). The exopack TRIPLE SIMS enforcement layer — the mechanism that makes this framework more than a process document — was not mentioned anywhere in the whitepaper.
+**Commit:** See `git log --oneline -1`
+**AI Role:** AI audited all 16 repos for exopack features, TOI/POA presence, and test binary existence. AI drafted Section 3.5 and the project table. Human directed the audit scope, validated repo descriptions, and confirmed exopack feature mappings against actual Cargo.toml files.
+**Proof:** [WHITEPAPER.md](WHITEPAPER.md) Section 3.4 table + Section 3.5
+
 ### 2026-03-27 — Exopack Integration: Two-Binary Model with TRIPLE SIMS
 
 **What:** Added exopack as optional dependency behind `tests` feature. Created `provenance-docs-test` binary using `exopack::triple_sims::f60` to run the doc validation gate 3x. Added `lib.rs` with `f30` that validates TOI fields, POA sections, and required doc existence. Updated POA with Build Output, Screenshots, and self-verification commands.
