@@ -42,11 +42,12 @@ flowchart TD
 
 | Metric | Value |
 |--------|-------|
-| `provenance-docs` release (stripped) | 328 KB |
+| `provenance-docs` release (stripped) | 346 KB |
 | `provenance-docs-test` release (stripped) | 432 KB |
 | Rust edition | 2024 |
-| External dependencies (default) | 0 |
+| External dependencies (default) | nix (POSIX signals for hot reload) |
 | External dependencies (tests feature) | exopack, tokio |
+| Supply chain audit | [govdocs/SUPPLY_CHAIN_AUDIT.md](../govdocs/SUPPLY_CHAIN_AUDIT.md) |
 | Cloud dependencies | Zero |
 | Infrastructure cost | $0 — runs anywhere with `rustc` |
 
@@ -66,8 +67,9 @@ flowchart TD
 
 ## Screenshots
 
-provenance-docs is a CLI framework with no GUI. Visual proof is the terminal output of the TRIPLE SIMS test gate:
+provenance-docs is a CLI framework with no GUI. Visual proof is the terminal output of the main binary and TRIPLE SIMS test gate:
 
+**Main binary** (`cargo run`):
 ```
   OK  TIMELINE_OF_INVENTION.md
   OK  PROOF_OF_ARTIFACTS.md
@@ -80,10 +82,17 @@ provenance-docs is a CLI framework with no GUI. Visual proof is the terminal out
   OK  POA section ## Architecture
   OK  POA section ## Build Output
   OK  POA section ## Validation
+  OK  POA section ## Screenshots
   OK  POA section ## How to Verify
 All checks passed
+```
+
+**Test binary** (`cargo run --bin provenance-docs-test --features tests`):
+```
+[same 13 checks repeated 3x]
 TRIPLE SIMS pass 1/3 OK (0ms)
-...
+TRIPLE SIMS pass 2/3 OK (0ms)
+TRIPLE SIMS pass 3/3 OK (0ms)
 TRIPLE SIMS: 3/3 passes OK
 ```
 

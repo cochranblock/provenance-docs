@@ -2,6 +2,7 @@
 name = "provenance-docs"
 version = "0.1.0"
 edition = "2024"
+license = "Unlicense"
 default-run = "provenance-docs"
 
 [features]
@@ -22,5 +23,6 @@ path = "src/bin/provenance-docs-test.rs"
 required-features = ["tests"]
 
 [dependencies]
+nix = { version = "0.31", features = ["signal", "process"] }
 exopack = { path = "../exopack", optional = true, features = ["triple_sims"] }
 tokio = { version = "1", features = ["rt", "macros"], optional = true }

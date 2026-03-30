@@ -10,6 +10,14 @@
 
 ## Entries
 
+### 2026-03-30 — Supply Chain Audit + Hot Reload + File Sprawl Cleanup
+
+**What:** Full EO 14028 supply chain security audit. cargo audit (0 CVEs), cargo deny (license fix), cargo geiger (0 unsafe in application code), cargo outdated (all current), deep code review of all deps. Added hot reload via PID lockfile + SIGTERM/SIGKILL handoff using nix crate. Expanded .gitignore. Created govdocs/ directory with SUPPLY_CHAIN_AUDIT.md. Main binary now runs f30 doc validation with hot reload instead of Hello World.
+**Why:** Federal-grade supply chain verification per EO 14028 and NIST SP 800-218. Hot reload enables zero-downtime binary upgrades — same pattern across all CochranBlock binaries. The main binary was a stub; now it validates docs on every run.
+**Commit:** See `git log --oneline -1`
+**AI Role:** AI ran all audit tools (cargo audit, deny, geiger, outdated, tree), reviewed dep source code for unsafe blocks/network calls/env var reads/command injection, and drafted SUPPLY_CHAIN_AUDIT.md. AI implemented hot reload using nix crate for POSIX signals. Human directed the audit scope, validated findings, confirmed nix upgrade from 0.29 to 0.31, and defined the hot reload PID lifecycle.
+**Proof:** [govdocs/SUPPLY_CHAIN_AUDIT.md](govdocs/SUPPLY_CHAIN_AUDIT.md)
+
 ### 2026-03-27 — Whitepaper Expansion: 16 Repos, TRIPLE SIMS Coverage, Programmatic Enforcement
 
 **What:** Updated whitepaper from 12 to 16 repositories. Added full project table with per-repo exopack feature coverage. Added Section 3.5 documenting the two-binary model and TRIPLE SIMS as programmatic enforcement of documentation compliance. Updated Phase I tooling status to reflect existing f30 validator. Updated POA validation metrics.
