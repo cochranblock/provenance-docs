@@ -96,6 +96,18 @@ TRIPLE SIMS pass 3/3 OK (0ms)
 TRIPLE SIMS: 3/3 passes OK
 ```
 
+## Commit Log
+
+| Hash | Date | Description |
+|------|------|-------------|
+| 55b2eac | 2026-03-26 | Initial whitepaper + TOI/POA + framework scaffold |
+| b7d18be | 2026-03-27 | README with cochranblock.org backlink |
+| 8e21788 | 2026-03-27 | Pin TOI commit hash to actual 55b2eac |
+| 783564d | 2026-03-27 | Exopack integration: two-binary model, TRIPLE SIMS |
+| b143ff4 | 2026-03-27 | POA expansion: Build Output, Screenshots, f30 updates |
+| 4f9459a | 2026-03-29 | Whitepaper expansion: 16 repos, Section 3.5 enforcement |
+| dc2bcfe | 2026-03-30 | Supply chain audit, hot reload, file cleanup |
+
 ## Live Examples
 
 Every repository at [github.com/cochranblock](https://github.com/cochranblock) contains:
@@ -108,7 +120,7 @@ Every repository at [github.com/cochranblock](https://github.com/cochranblock) c
 # Clone and build provenance-docs
 git clone https://github.com/cochranblock/provenance-docs
 cd provenance-docs
-cargo build --release                              # 328 KB main binary
+cargo build --release                              # 346 KB main binary
 cargo run --bin provenance-docs-test --features tests  # TRIPLE SIMS 3/3
 
 # Verify any other CochranBlock repo
