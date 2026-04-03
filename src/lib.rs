@@ -10,7 +10,14 @@ pub fn f30() -> i32 {
     let mut failures = 0;
 
     // Stage 1: required docs exist
-    for name in ["TIMELINE_OF_INVENTION.md", "PROOF_OF_ARTIFACTS.md", "WHITEPAPER.md"] {
+    for name in [
+        "TIMELINE_OF_INVENTION.md",
+        "PROOF_OF_ARTIFACTS.md",
+        "WHITEPAPER.md",
+        "BACKLOG.md",
+        "govdocs/SUPPLY_CHAIN_AUDIT.md",
+        "govdocs/CDRL_MAPPING.md",
+    ] {
         let p = root.join(name);
         if p.exists() {
             println!("  OK  {name}");
@@ -215,6 +222,27 @@ pub fn f30() -> i32 {
         if toi_missing_poa == 0 && toi_in_poa > 0 {
             println!("  OK  Bidirectional: {toi_in_poa} TOI hashes found in POA Commit Log");
         }
+    }
+
+    // Stage 10: AI Role field mentions both human and AI contributions
+    let mut role_count = 0;
+    let mut role_valid = 0;
+    let toi_lower = toi.to_lowercase();
+    for line in toi_lower.lines() {
+        if line.starts_with("**ai role:**") {
+            role_count += 1;
+            let has_ai = line.contains("ai ");
+            let has_human = line.contains("human");
+            if has_ai && has_human {
+                role_valid += 1;
+            } else {
+                eprintln!("  FAIL  AI Role entry missing human or AI attribution");
+                failures += 1;
+            }
+        }
+    }
+    if role_count > 0 && role_valid == role_count {
+        println!("  OK  AI Role: {role_count} entries have dual attribution");
     }
 
     if failures == 0 {

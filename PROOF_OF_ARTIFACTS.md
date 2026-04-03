@@ -153,6 +153,7 @@ TRIPLE SIMS: 3/3 passes OK
 | 46f2b0f | 2026-04-03 | NanoSign provenance mechanism with P23 Triple Lens validation |
 | 7ff5698 | 2026-04-03 | Add prioritized BACKLOG.md: 20 work items |
 | 1ccb79b | 2026-04-03 | f30 stages 7-9: git history, POA completeness, bidirectional cross-check |
+| 5425bc8 | 2026-04-03 | Add machine-readable JSON-LD schema proposal (Section 2.3) |
 
 ## Live Examples
 
