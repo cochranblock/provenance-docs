@@ -99,6 +99,65 @@ Proof: WHITEPAPER.md
 
 **The verification commands are mandatory.** Any reviewer can clone the repo, run the commands, and confirm the software works. This is not documentation — it is a reproducibility contract.
 
+### 2.3 Machine-Readable Schema (Draft)
+
+The markdown format is human-first. For tooling, CI integration, and SBOM pipelines, the same data can be expressed as structured JSON-LD. This is a draft proposal — Phase I work item #1 is to formalize it.
+
+**TOI Entry Schema:**
+
+```json
+{
+  "@context": "https://cochranblock.org/provenance/v1",
+  "@type": "TimelineEntry",
+  "date": "2026-03-26",
+  "title": "Ghost Fabric Whitepaper + Rust Scaffold",
+  "what": "Published whitepaper on sovereign edge intelligence...",
+  "why": "Defines technical thesis for edge AI on LoRa...",
+  "commits": ["f502788", "24e2817"],
+  "aiRole": {
+    "aiGenerated": "Drafted whitepaper sections, added technical specifics",
+    "humanDirected": "Directed thesis, validated claims against hardware specs"
+  },
+  "proof": ["WHITEPAPER.md"]
+}
+```
+
+**POA Schema:**
+
+```json
+{
+  "@context": "https://cochranblock.org/provenance/v1",
+  "@type": "ProofOfArtifacts",
+  "repository": "https://github.com/cochranblock/ghost-fabric",
+  "architecture": { "format": "mermaid", "content": "..." },
+  "buildOutput": {
+    "binarySize": "346 KB",
+    "edition": "2024",
+    "cloudDeps": 0,
+    "supplyChainAudit": "govdocs/SUPPLY_CHAIN_AUDIT.md"
+  },
+  "validation": {
+    "repoCount": 16,
+    "testGateCoverage": "12 of 16",
+    "totalCommits": 500
+  },
+  "verification": [
+    "cargo build --release",
+    "cargo run --bin provenance-docs-test --features tests"
+  ],
+  "nanosign": {
+    "modelHash": "blake3:a1b2c3d4...",
+    "registry": "model_hashes.sled"
+  }
+}
+```
+
+**Design decisions:**
+- JSON-LD over SPDX extension: SPDX is designed for software components, not human/AI attribution. A standalone `@context` keeps the schema self-contained and avoids forcing TOI semantics into package-dependency models.
+- The `aiRole` object separates `aiGenerated` from `humanDirected` — this is the machine-readable form of the mandatory "AI Role" field.
+- `nanosign` is optional — present only when AI model files are part of the supply chain.
+- `commits` is an array of short hashes that can be expanded to full SHA via `git rev-parse`.
+
 ## 3. Why This Works
 
 ### 3.1 Embedded, Not Retroactive

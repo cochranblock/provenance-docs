@@ -152,6 +152,7 @@ TRIPLE SIMS: 3/3 passes OK
 | 3116cf0 | 2026-04-03 | Pin NanoSign commit, add missing POA entries, fold 6ce4142 into TOI |
 | 46f2b0f | 2026-04-03 | NanoSign provenance mechanism with P23 Triple Lens validation |
 | 7ff5698 | 2026-04-03 | Add prioritized BACKLOG.md: 20 work items |
+| 1ccb79b | 2026-04-03 | f30 stages 7-9: git history, POA completeness, bidirectional cross-check |
 
 ## Live Examples
 
