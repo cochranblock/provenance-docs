@@ -127,6 +127,7 @@ TRIPLE SIMS: 3/3 passes OK
 | dc2bcfe | 2026-03-30 | Supply chain audit, hot reload, file cleanup |
 | 7fd287a | 2026-03-31 | Pin TOI hashes, add POA commit log, complete self-documentation |
 | 2c03770 | 2026-04-02 | Expand f30 validator: hash format, date ordering, cross-doc consistency |
+| be91115 | 2026-04-02 | Pin commit hash 2c03770 in TOI, add POA commit log entry |
 
 ## Live Examples
 

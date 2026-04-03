@@ -3,6 +3,8 @@ name = "provenance-docs"
 version = "0.1.0"
 edition = "2024"
 license = "Unlicense"
+repository = "https://github.com/cochranblock/provenance-docs"
+homepage = "https://cochranblock.org"
 default-run = "provenance-docs"
 
 [features]

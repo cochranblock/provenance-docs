@@ -14,7 +14,7 @@
 
 **What:** Expanded f30 from 13 checks to 28. Added Stage 4 (TOI commit hash format validation — skips prose, enforces 7-40 char hex), Stage 5 (TOI date ordering — entries must be reverse-chronological), Stage 6 (cross-document consistency — every POA Commit Log hash must appear in TOI). Fixed three audit gaps: added missing TOI entry for 7fd287a, fixed README repo count from 14 to 16, added Validation row to whitepaper Section 2.2 POA spec table.
 **Why:** The audit found that f30 only checked for string presence — it could not catch structural errors like placeholder hashes, mis-ordered entries, or POA/TOI desynchronization. These are the exact errors that a federal auditor would flag. Deeper validation moves f30 from "documents exist" to "documents are internally consistent."
-**Commit:** 2c03770
+**Commit:** 2c03770, be91115
 **AI Role:** AI implemented the three new f30 validation stages, drafted the TOI entry and POA updates. Human directed which validations to add, defined the acceptance criteria (hex-only hashes, reverse-chronological dates, cross-doc hash verification), and verified TRIPLE SIMS 3/3 pass.
 **Proof:** `cargo run` shows all checks passed; `cargo run --bin provenance-docs-test --features tests` — TRIPLE SIMS 3/3
 

@@ -191,7 +191,7 @@ The "AI Role" field directly addresses the provenance question in DFARS 252.227-
 ## 6. Why The Cochran Block
 
 - **13 years defense and enterprise** — Army 17C (Cyber Operations), USCYBERCOM J38 dev lead for a Congressional NDAA-directed offensive cyber operations study
-- **The framework is already built** — 16 repos, 500+ commits, 12 with programmatic enforcement, all publicly auditable at github.com/cochranblock
+- **The framework is already built** — 16 repos, 500+ commits, 12 with programmatic enforcement, all publicly auditable at [github.com/cochranblock](https://github.com/cochranblock)
 - **Zero-cloud architecture** — the tooling runs as a compiled Rust binary with no cloud dependencies, suitable for classified environments
 - **SDVOSB** — Service-Disabled Veteran-Owned Small Business (pending certification)
 - **Unlicense** — all source code is public domain, eliminating IP concerns for government adoption
@@ -200,9 +200,9 @@ The "AI Role" field directly addresses the provenance question in DFARS 252.227-
 
 AI-assisted development is already happening inside every defense contractor and federal agency. The question is not whether to allow it — it's how to document it. Provenance Docs provides the answer: two documents, embedded in the workflow, with a mandatory human/AI attribution field on every entry.
 
-The framework exists. The code is public. The proof is at github.com/cochranblock.
+The framework exists. The code is public. The proof is at [github.com/cochranblock](https://github.com/cochranblock).
 
 ---
 
 *The Cochran Block, LLC — Dundalk, MD*
-*SDVOSB (Pending) · SAM.gov Registered · cochranblock.org*
+*SDVOSB (Pending) · SAM.gov Registered · [cochranblock.org](https://cochranblock.org)*
