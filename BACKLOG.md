@@ -6,14 +6,15 @@ Prioritized work items for provenance-docs. Most important at top. Max 20.
 Self-reorganizes based on recency and relevance.
 
 > Last triaged: 2026-04-03. Cross-references: kova, exopack, nanosign, IRONHIVE.
+> P23 Triple Lens run 2026-04-03 — top 3 items are synthesis output.
 
 ---
 
-1. `[feature]` **NanoSign: publish standalone `nanosign` crate** — extract from kova into `github.com/cochranblock/nanosign`. Phase I item #5. 3 public functions: `sign`, `verify`, `strip`. Single dep: `blake3`. Depends: kova (`docs/NANOSIGN.md` is the spec).
+1. `[feature]` **`generate-toi` subcommand** — `cargo run -- generate-toi` reads `git log -1`, extracts date/hash/message, and appends a structured TOI entry stub to `TIMELINE_OF_INVENTION.md` plus emits the corresponding POA Commit Log row. Breaks the self-documentation loop: every commit currently puts f30 Stage 8 into a failing state until docs are manually updated. Phase I item #2. Highest-impact usability fix. Depends: none.
 
-2. `[build]` **Add `nanosign` as optional dependency** — behind a `nanosign` feature flag. f30 can then verify model hashes listed in a `## Model Provenance` POA section. Depends: item #1 (nanosign crate published).
+2. `[feature]` **f30: validate TOI dates against git commit timestamps** — for each TOI entry, extract the `git log --format=%ai` timestamp of the listed commit hash and verify the TOI `### YYYY-MM-DD` date is within a configurable window (default ±7 days). Closes the largest integrity hole in the provenance chain: TOI dates are currently manually entered and never cross-referenced against actual commit timestamps. Turns f30 from "self-consistent" to "tamper-evident." Paranoia lens finding. Depends: none.
 
-3. `[research]` **P23 Triple Lens: evaluate TOI/POA as SPDX extension** — run optimist/pessimist/paranoia analysis on whether the framework fits inside SPDX vs standalone spec. Depends: kova IRONHIVE cluster online, kova `c2 research` command.
+3. `[build]` **GitHub Actions CI** — single workflow: `cargo clippy --deny warnings`, `cargo run` (f30 exit code), `cargo run --bin provenance-docs-test --features tests` (TRIPLE SIMS). 20 lines of YAML. The whitepaper leads with "programmatic enforcement" but the public repo has no CI badge — federal reviewers and SBIR evaluators check this first. Depends: none.
 
 4. `[build]` **Release binary size tracking** — POA claims 346 KB main binary. Add a build step or f30 check that verifies the release binary size is within expected range. Flag if it grows past a threshold. Depends: none.
 

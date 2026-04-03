@@ -10,13 +10,13 @@
 
 ## Entries
 
-### 2026-04-03 — NanoSign Origin Auth Roadmap, POA Screenshots, Test Fixes
+### 2026-04-03 — P23 Triple Lens + Bug Fixes + BACKLOG Readjustment
 
-**What:** Added NanoSign origin authentication roadmap to BACKLOG.md. Stabilized POA screenshots to match current f30 output. Fixed "12 of 16" repo count inconsistency. Added unit tests for all core library functions and integration tests covering the full f30 validation pipeline against real repository state.
-**Why:** The prior commit introduced f30 Stage 10 (AI Role validation) but the tests exposed a prefix-stripping bug — `validate_ai_roles` was matching "ai " in the `**AI Role:**` prefix itself, making all entries appear valid even when missing AI attribution. The fix strips the prefix before checking content. `git log --oneline --all` was including stash commits in coverage checks — switched to `git log --oneline` for clean history coverage.
-**Commit:** aacefa0
-**AI Role:** AI identified the prefix-stripping bug, the stash commit inclusion bug, and the missing TOI/POA entries. AI fixed all three and added the missing documentation. Human directed the test analysis and validated the fixes.
-**Proof:** `cargo test` — all tests pass; `cargo run` — all checks passed
+**What:** P23 Triple Lens analysis of provenance-docs: full source read, optimist/pessimist/paranoia evaluation, synthesis into 3 concrete next actions. Fixed `validate_ai_roles` prefix-stripping bug (prefix `**ai role:**` contained `"ai "` making has_ai always true). Fixed git coverage to use `git log --oneline` instead of `--all` (stash commits were false-failing Stage 8). Replaced BACKLOG top 3 with P23 synthesis: (1) `generate-toi` subcommand, (2) f30 date-vs-git-timestamp validation, (3) GitHub Actions CI.
+**Why:** The self-documentation loop breaks on every commit — f30 Stage 8 fails immediately after any commit until POA/TOI are manually updated. This is the primary usability gap. The paranoia lens also identified that TOI dates are never verified against actual git commit timestamps, which is the largest integrity hole in the provenance chain.
+**Commit:** aacefa0, e691e4f
+**AI Role:** AI ran the full P23 Triple Lens analysis, identified all three synthesis findings, fixed both code bugs, updated all docs. Human directed the P23 execution and validated the synthesis output.
+**Proof:** `cargo test` — 93 tests pass; `cargo run` — all checks passed
 
 ### 2026-04-03 — NanoSign as Provenance Mechanism + P23 Triple Lens Validation
 
