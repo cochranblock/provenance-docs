@@ -259,12 +259,20 @@ NanoSign is format-agnostic (safetensors, GGUF, ONNX, PyTorch, nanobyte), backwa
 
 **P23 validation:** The NanoSign design was evaluated using the P23 Triple Lens Research Protocol — three independent analyses (optimist, pessimist, paranoia) run in parallel across the IRONHIVE cluster, then synthesized into a single assessment. The optimist lens confirmed the 36-byte format solves the unsigned-model problem with zero infrastructure. The pessimist lens identified that BLAKE3 alone does not authenticate origin (who signed, only what was signed). The paranoia lens flagged model-poisoning attacks where an adversary re-signs a tampered file. Synthesis: NanoSign is high-confidence for integrity verification; origin authentication requires a future extension (registry or public key binding). This is documented and accepted — integrity first, authentication second.
 
+**Origin authentication roadmap:** NanoSign v1 answers "has this file been modified?" but not "who created it?" Two planned extensions address this:
+
+1. **Registry binding (v1.1)** — the sled-backed hash registry already stores `(model_name, blake3_hash)`. Extending to `(model_name, blake3_hash, source_id, timestamp)` adds origin tracking without changing the file format. The 36-byte trailer stays the same; the registry adds the "who" and "when." This is local-first — no external infrastructure.
+
+2. **Public key signing (v2)** — append an additional 64 bytes (ed25519 signature) after the BLAKE3 hash, with a new magic `NSG2`. The file becomes: `[payload][NSIG][blake3_32b][NSG2][ed25519_sig_64b]`. Verification checks both integrity (BLAKE3) and origin (signature). Public keys are distributed via the registry or out-of-band. This adds 100 bytes total overhead (still under 0.000003% of a 4GB model).
+
+The v1.1 registry extension is planned for Phase I. The v2 public key extension is Phase II work — it requires key management decisions that should be informed by government pilot deployments.
+
 ## 5. Proposed SBIR Work
 
 ### Phase I ($50K-$275K, 6-12 months)
 
 1. **Formalize the specification** — publish TOI and POA as machine-readable schemas (JSON-LD, SPDX extension, or standalone spec)
-2. **Build the tooling** — CLI tool that generates TOI entries from git commits, integrates with CI/CD pipelines, and validates POA completeness (POA structural validation is already implemented in `provenance-docs` via `f30` and enforced across 12 repos through exopack test binaries)
+2. **Build the tooling** — CLI tool that generates TOI entries from git commits, integrates with CI/CD pipelines, and validates POA completeness (POA structural validation is already implemented in `provenance-docs` via `f30` and enforced across 12 of 16 repos through exopack test binaries)
 3. **Pilot with 3-5 federal contractors** — validate the framework against real CDRL deliveries and security audits
 4. **Publish compliance mapping** — formal mapping to DFARS, NIST SSDF, EO 14028, and SBOM requirements
 5. **NanoSign standardization** — publish NanoSign as a standalone crate and propose the 36-byte model signing format as an AI supply chain security standard for SBOM integration

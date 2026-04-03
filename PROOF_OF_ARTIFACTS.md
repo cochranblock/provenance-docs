@@ -80,11 +80,14 @@ flowchart TD
 
 provenance-docs is a CLI framework with no GUI. Visual proof is the terminal output of the main binary and TRIPLE SIMS test gate:
 
-**Main binary** (`cargo run`):
+**Main binary** (`cargo run`) — structural checks are stable, hash counts grow with each commit:
 ```
   OK  TIMELINE_OF_INVENTION.md
   OK  PROOF_OF_ARTIFACTS.md
   OK  WHITEPAPER.md
+  OK  BACKLOG.md
+  OK  govdocs/SUPPLY_CHAIN_AUDIT.md
+  OK  govdocs/CDRL_MAPPING.md
   OK  TOI field **What:**
   OK  TOI field **Why:**
   OK  TOI field **Commit:**
@@ -95,41 +98,22 @@ provenance-docs is a CLI framework with no GUI. Visual proof is the terminal out
   OK  POA section ## Validation
   OK  POA section ## Screenshots
   OK  POA section ## How to Verify
-  OK  TOI hash 5754bf5
-  OK  TOI hash 2c03770
-  OK  TOI hash be91115
-  OK  TOI hash 6ce4142
-  OK  TOI hash 7fd287a
-  OK  TOI hash dc2bcfe
-  OK  TOI hash 4f9459a
-  OK  TOI hash 783564d
-  OK  TOI hash b143ff4
-  OK  TOI hash b7d18be
-  OK  TOI hash 8e21788
-  OK  TOI hash 55b2eac
+  OK  TOI hash <N hashes verified>
   OK  TOI dates in reverse-chronological order
-  OK  POA hash 55b2eac found in TOI
-  OK  POA hash b7d18be found in TOI
-  OK  POA hash 8e21788 found in TOI
-  OK  POA hash 783564d found in TOI
-  OK  POA hash b143ff4 found in TOI
-  OK  POA hash 4f9459a found in TOI
-  OK  POA hash dc2bcfe found in TOI
-  OK  POA hash 7fd287a found in TOI
-  OK  POA hash 2c03770 found in TOI
-  OK  POA hash be91115 found in TOI
-  OK  POA hash 6ce4142 found in TOI
-  OK  POA hash 5754bf5 found in TOI
-  OK  Cross-doc: 12 POA hashes verified against TOI
+  OK  Cross-doc: <N> POA hashes verified against TOI
+  OK  Git history: <N> TOI hashes verified
+  OK  POA Commit Log covers all <N> git commits
+  OK  Bidirectional: <N> TOI hashes found in POA Commit Log
+  OK  AI Role: <N> entries have dual attribution
 All checks passed
 ```
 
 **Test binary** (`cargo run --bin provenance-docs-test --features tests`):
 ```
 [same checks repeated 3x]
-TRIPLE SIMS pass 1/3 OK (0ms)
-TRIPLE SIMS pass 2/3 OK (0ms)
-TRIPLE SIMS pass 3/3 OK (0ms)
+TRIPLE SIMS pass 1/3 OK
+TRIPLE SIMS pass 2/3 OK
+TRIPLE SIMS pass 3/3 OK
 TRIPLE SIMS: 3/3 passes OK
 ```
 
@@ -154,6 +138,7 @@ TRIPLE SIMS: 3/3 passes OK
 | 7ff5698 | 2026-04-03 | Add prioritized BACKLOG.md: 20 work items |
 | 1ccb79b | 2026-04-03 | f30 stages 7-9: git history, POA completeness, bidirectional cross-check |
 | 5425bc8 | 2026-04-03 | Add machine-readable JSON-LD schema proposal (Section 2.3) |
+| 7b915ed | 2026-04-03 | CDRL mapping, JSON-LD schema, f30 stage 10: govdocs + AI Role validation |
 
 ## Live Examples
 
