@@ -139,6 +139,7 @@ TRIPLE SIMS: 3/3 passes OK
 | 1ccb79b | 2026-04-03 | f30 stages 7-9: git history, POA completeness, bidirectional cross-check |
 | 5425bc8 | 2026-04-03 | Add machine-readable JSON-LD schema proposal (Section 2.3) |
 | 7b915ed | 2026-04-03 | CDRL mapping, JSON-LD schema, f30 stage 10: govdocs + AI Role validation |
+| aacefa0 | 2026-04-03 | NanoSign origin auth roadmap, stable POA screenshots, "12 of 16" fix |
 
 ## Live Examples
 

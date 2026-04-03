@@ -10,6 +10,14 @@
 
 ## Entries
 
+### 2026-04-03 — NanoSign Origin Auth Roadmap, POA Screenshots, Test Fixes
+
+**What:** Added NanoSign origin authentication roadmap to BACKLOG.md. Stabilized POA screenshots to match current f30 output. Fixed "12 of 16" repo count inconsistency. Added unit tests for all core library functions and integration tests covering the full f30 validation pipeline against real repository state.
+**Why:** The prior commit introduced f30 Stage 10 (AI Role validation) but the tests exposed a prefix-stripping bug — `validate_ai_roles` was matching "ai " in the `**AI Role:**` prefix itself, making all entries appear valid even when missing AI attribution. The fix strips the prefix before checking content. `git log --oneline --all` was including stash commits in coverage checks — switched to `git log --oneline` for clean history coverage.
+**Commit:** aacefa0
+**AI Role:** AI identified the prefix-stripping bug, the stash commit inclusion bug, and the missing TOI/POA entries. AI fixed all three and added the missing documentation. Human directed the test analysis and validated the fixes.
+**Proof:** `cargo test` — all tests pass; `cargo run` — all checks passed
+
 ### 2026-04-03 — NanoSign as Provenance Mechanism + P23 Triple Lens Validation
 
 **What:** Integrated NanoSign into provenance-docs as a first-class AI supply chain security mechanism. Whitepaper Section 4.4 documents the 36-byte model signing standard (4-byte NSIG magic + 32-byte BLAKE3 hash) with four provenance capabilities: model integrity, chain of custody, supply chain security, SBOM integration. Added P23 Triple Lens validation to Section 4.4 — NanoSign was evaluated using three independent analyses (optimist/pessimist/paranoia) across the IRONHIVE cluster per the P23 protocol (kova/docs/KOVA_BLUEPRINT.md Section 10). Synthesis: high-confidence for integrity, origin authentication deferred to future extension. Updated POA architecture diagram with NanoSign subgraph. Created BACKLOG.md with 20 prioritized work items. Expanded f30 with Stage 7 (git history hash verification), Stage 8 (POA Commit Log completeness vs git log), Stage 9 (bidirectional TOI↔POA cross-check). Added Section 2.3: draft JSON-LD schemas for TOI and POA with `@context` at cochranblock.org/provenance/v1. Created govdocs/CDRL_MAPPING.md with templates for DI-IPSC-81435 (SDD), DI-IPSC-81438 (SPS), DI-MGMT-81466 (ECP), DI-IPSC-81441 (STR) showing how TOI/POA content maps to each federal deliverable.
