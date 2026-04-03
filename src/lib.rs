@@ -2,6 +2,7 @@
 //! provenance_docs library. f30=run_tests: validate TOI+POA exist and contain required fields.
 
 use std::path::Path;
+use std::process::Command;
 
 /// f30=run_tests. Returns 0 on success, 1 on failure.
 pub fn f30() -> i32 {
@@ -124,6 +125,96 @@ pub fn f30() -> i32 {
     }
     if cross_checked > 0 {
         println!("  OK  Cross-doc: {cross_checked} POA hashes verified against TOI");
+    }
+
+    // Stage 7: TOI commit hashes exist in git history
+    let git_log = Command::new("git")
+        .args(["log", "--oneline", "--all"])
+        .current_dir(root)
+        .output()
+        .ok()
+        .and_then(|o| if o.status.success() { String::from_utf8(o.stdout).ok() } else { None })
+        .unwrap_or_default();
+
+    if !git_log.is_empty() {
+        let mut toi_hashes: Vec<&str> = Vec::new();
+        for line in toi.lines() {
+            if let Some(rest) = line.strip_prefix("**Commit:**") {
+                for token in rest.trim().split([',', ' ']) {
+                    let token = token.trim();
+                    if token.len() >= 7
+                        && token.len() <= 40
+                        && token.chars().all(|c| c.is_ascii_hexdigit())
+                    {
+                        toi_hashes.push(token);
+                    }
+                }
+            }
+        }
+
+        let mut git_verified = 0;
+        for hash in &toi_hashes {
+            if git_log.lines().any(|line| line.starts_with(hash)) {
+                git_verified += 1;
+            } else {
+                eprintln!("  FAIL  TOI hash {hash} not found in git history");
+                failures += 1;
+            }
+        }
+        if git_verified > 0 {
+            println!("  OK  Git history: {git_verified} TOI hashes verified");
+        }
+
+        // Stage 8: POA Commit Log covers all repo commits
+        let mut poa_hashes: Vec<&str> = Vec::new();
+        for line in poa.lines() {
+            let trimmed = line.trim();
+            if !trimmed.starts_with('|') {
+                continue;
+            }
+            let cols: Vec<&str> = trimmed.split('|').collect();
+            if cols.len() >= 3 {
+                let h = cols[1].trim();
+                if h.len() >= 7
+                    && h.len() <= 40
+                    && h.chars().all(|c| c.is_ascii_hexdigit())
+                {
+                    poa_hashes.push(h);
+                }
+            }
+        }
+
+        let git_hashes: Vec<&str> = git_log
+            .lines()
+            .filter_map(|line| line.split_whitespace().next())
+            .collect();
+        let mut missing_from_poa = 0;
+        for gh in &git_hashes {
+            if !poa_hashes.iter().any(|ph| ph == gh) {
+                eprintln!("  FAIL  Git commit {gh} missing from POA Commit Log");
+                missing_from_poa += 1;
+                failures += 1;
+            }
+        }
+        if missing_from_poa == 0 {
+            println!("  OK  POA Commit Log covers all {} git commits", git_hashes.len());
+        }
+
+        // Stage 9: Bidirectional — every TOI hash appears in POA Commit Log
+        let mut toi_in_poa = 0;
+        let mut toi_missing_poa = 0;
+        for hash in &toi_hashes {
+            if poa_hashes.iter().any(|ph| ph == hash) {
+                toi_in_poa += 1;
+            } else {
+                eprintln!("  FAIL  TOI hash {hash} not found in POA Commit Log");
+                toi_missing_poa += 1;
+                failures += 1;
+            }
+        }
+        if toi_missing_poa == 0 && toi_in_poa > 0 {
+            println!("  OK  Bidirectional: {toi_in_poa} TOI hashes found in POA Commit Log");
+        }
     }
 
     if failures == 0 {
