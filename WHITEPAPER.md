@@ -91,6 +91,7 @@ Proof: WHITEPAPER.md
 |---------|---------|
 | **Architecture** | Mermaid diagram or ASCII wire showing system topology |
 | **Build Output** | Binary size, infrastructure cost, external dependencies, cloud dependencies |
+| **Validation** | Framework-wide metrics: repo coverage, test gate adoption, total commits documented |
 | **Screenshots** | Visual proof of running software |
 | **How to Verify** | Exact commands to reproduce the build and run the software |
 

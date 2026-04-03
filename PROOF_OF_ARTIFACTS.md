@@ -63,7 +63,7 @@ flowchart TD
 | External dependencies | Zero (markdown + git) |
 | Tooling required | git (already present in every dev environment) |
 | Two-binary model | Yes — exopack TRIPLE SIMS gate |
-| Test gate | f30 validates TOI fields + POA sections |
+| Test gate | f30 validates TOI fields + POA sections + commit hash format + date ordering + cross-doc consistency |
 
 ## Screenshots
 
@@ -84,12 +84,30 @@ provenance-docs is a CLI framework with no GUI. Visual proof is the terminal out
   OK  POA section ## Validation
   OK  POA section ## Screenshots
   OK  POA section ## How to Verify
+  OK  TOI hash 7fd287a
+  OK  TOI hash dc2bcfe
+  OK  TOI hash 4f9459a
+  OK  TOI hash 783564d
+  OK  TOI hash b143ff4
+  OK  TOI hash b7d18be
+  OK  TOI hash 8e21788
+  OK  TOI hash 55b2eac
+  OK  TOI dates in reverse-chronological order
+  OK  POA hash 55b2eac found in TOI
+  OK  POA hash b7d18be found in TOI
+  OK  POA hash 8e21788 found in TOI
+  OK  POA hash 783564d found in TOI
+  OK  POA hash b143ff4 found in TOI
+  OK  POA hash 4f9459a found in TOI
+  OK  POA hash dc2bcfe found in TOI
+  OK  POA hash 7fd287a found in TOI
+  OK  Cross-doc: 8 POA hashes verified against TOI
 All checks passed
 ```
 
 **Test binary** (`cargo run --bin provenance-docs-test --features tests`):
 ```
-[same 13 checks repeated 3x]
+[same checks repeated 3x]
 TRIPLE SIMS pass 1/3 OK (0ms)
 TRIPLE SIMS pass 2/3 OK (0ms)
 TRIPLE SIMS pass 3/3 OK (0ms)
@@ -107,6 +125,7 @@ TRIPLE SIMS: 3/3 passes OK
 | b143ff4 | 2026-03-27 | POA expansion: Build Output, Screenshots, f30 updates |
 | 4f9459a | 2026-03-29 | Whitepaper expansion: 16 repos, Section 3.5 enforcement |
 | dc2bcfe | 2026-03-30 | Supply chain audit, hot reload, file cleanup |
+| 7fd287a | 2026-03-31 | Pin TOI hashes, add POA commit log, complete self-documentation |
 
 ## Live Examples
 

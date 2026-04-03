@@ -10,6 +10,22 @@
 
 ## Entries
 
+### 2026-04-02 — f30 Validator Expansion: Hash Validation, Date Ordering, Cross-Doc Consistency
+
+**What:** Expanded f30 from 13 checks to 28. Added Stage 4 (TOI commit hash format validation — skips prose, enforces 7-40 char hex), Stage 5 (TOI date ordering — entries must be reverse-chronological), Stage 6 (cross-document consistency — every POA Commit Log hash must appear in TOI). Fixed three audit gaps: added missing TOI entry for 7fd287a, fixed README repo count from 14 to 16, added Validation row to whitepaper Section 2.2 POA spec table.
+**Why:** The audit found that f30 only checked for string presence — it could not catch structural errors like placeholder hashes, mis-ordered entries, or POA/TOI desynchronization. These are the exact errors that a federal auditor would flag. Deeper validation moves f30 from "documents exist" to "documents are internally consistent."
+**Commit:** See git log
+**AI Role:** AI implemented the three new f30 validation stages, drafted the TOI entry and POA updates. Human directed which validations to add, defined the acceptance criteria (hex-only hashes, reverse-chronological dates, cross-doc hash verification), and verified TRIPLE SIMS 3/3 pass.
+**Proof:** `cargo run` shows all checks passed; `cargo run --bin provenance-docs-test --features tests` — TRIPLE SIMS 3/3
+
+### 2026-03-31 — Pin TOI Hashes, Add POA Commit Log, Complete Self-Documentation
+
+**What:** Pinned all TOI commit hashes to actual short hashes. Added missing TOI entries for whitepaper expansion (4f9459a) and supply chain audit (dc2bcfe). Added Commit Log table to POA with all 7 historical commits. Updated POA Validation metrics and Screenshots to match actual binary output.
+**Why:** The TOI and POA were internally inconsistent — TOI had gaps for two commits, POA had no commit log, and POA screenshots did not match actual binary output. A documentation framework that fails its own standards is not credible for federal acquisition.
+**Commit:** 7fd287a
+**AI Role:** AI identified the missing entries and drafted TOI/POA content. Human verified all commit hashes against `git log --oneline`, confirmed POA screenshots matched actual `cargo run` output, and validated the Commit Log table was complete.
+**Proof:** [TIMELINE_OF_INVENTION.md](TIMELINE_OF_INVENTION.md), [PROOF_OF_ARTIFACTS.md](PROOF_OF_ARTIFACTS.md)
+
 ### 2026-03-30 — Supply Chain Audit + Hot Reload + File Sprawl Cleanup
 
 **What:** Full EO 14028 supply chain security audit. cargo audit (0 CVEs), cargo deny (license fix), cargo geiger (0 unsafe in application code), cargo outdated (all current), deep code review of all deps. Added hot reload via PID lockfile + SIGTERM/SIGKILL handoff using nix crate. Expanded .gitignore. Created govdocs/ directory with SUPPLY_CHAIN_AUDIT.md. Main binary now runs f30 doc validation with hot reload instead of Hello World.
