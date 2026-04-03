@@ -10,6 +10,14 @@
 
 ## Entries
 
+### 2026-04-03 — P23 triple lens: readjust fire
+
+**What:** P23 Triple Lens analysis readjusted BACKLOG top 3: generate-toi subcommand (breaks self-doc loop), f30 date-vs-git-timestamp validation (closes integrity gap), GitHub Actions CI (closes credibility gap). Updated TOI/POA to document e691e4f and 2d6f83f.
+**Why:** P23 synthesis identified the self-documentation loop as the highest-impact usability gap. Without generate-toi, every commit breaks f30 Stage 8 until docs are manually updated.
+**Commit:** 2d6f83f
+**AI Role:** AI ran P23 Triple Lens, synthesized findings into 3 ranked actions, updated BACKLOG. Human directed the analysis scope and validated the synthesis.
+**Proof:** `cargo run` — all checks passed; BACKLOG.md top 3 updated
+
 ### 2026-04-03 — P23 Triple Lens + Bug Fixes + BACKLOG Readjustment
 
 **What:** P23 Triple Lens analysis of provenance-docs: full source read, optimist/pessimist/paranoia evaluation, synthesis into 3 concrete next actions. Fixed `validate_ai_roles` prefix-stripping bug (prefix `**ai role:**` contained `"ai "` making has_ai always true). Fixed git coverage to use `git log --oneline` instead of `--all` (stash commits were false-failing Stage 8). Replaced BACKLOG top 3 with P23 synthesis: (1) `generate-toi` subcommand, (2) f30 date-vs-git-timestamp validation, (3) GitHub Actions CI.

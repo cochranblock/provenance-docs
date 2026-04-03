@@ -67,6 +67,14 @@ fn write_pid(path: &PathBuf) {
 }
 
 fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    let subcommand = args.get(1).map(|s| s.as_str());
+
+    if subcommand == Some("generate-toi") {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+        process::exit(provenance_docs::generate_toi(root));
+    }
+
     let lock = lockfile_path();
 
     // Hot reload: retire old instance

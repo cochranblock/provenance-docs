@@ -4,6 +4,188 @@
 use std::path::Path;
 use std::process::Command;
 
+// =============================================================================
+// generate-toi: commit info + doc mutation
+// =============================================================================
+
+/// Commit metadata extracted from `git log -1`.
+#[derive(Debug, PartialEq)]
+pub struct CommitInfo {
+    /// 7-char short hash (e.g. "abc1234")
+    pub short_hash: String,
+    /// ISO date portion only (e.g. "2026-04-03")
+    pub date: String,
+    /// First line of commit message
+    pub subject: String,
+}
+
+/// Run `git log -1` in `root` and parse into `CommitInfo`.
+/// Returns `None` if git is unavailable or the repo has no commits.
+pub fn get_last_commit(root: &Path) -> Option<CommitInfo> {
+    let out = Command::new("git")
+        .args(["log", "-1", "--format=%h%n%ai%n%s"])
+        .current_dir(root)
+        .output()
+        .ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    let text = String::from_utf8(out.stdout).ok()?;
+    let mut lines = text.lines();
+    let short_hash = lines.next()?.trim().to_string();
+    let date_line = lines.next()?.trim().to_string();
+    // %ai gives "YYYY-MM-DD HH:MM:SS +ZZZZ" — take first 10 chars
+    let date = date_line.get(..10)?.to_string();
+    let subject = lines.next()?.trim().to_string();
+    if short_hash.is_empty() || date.is_empty() {
+        return None;
+    }
+    Some(CommitInfo { short_hash, date, subject })
+}
+
+/// Build a TOI stub entry for `info`.
+/// Fields are pre-filled with the commit hash/date/subject; prose fields get TODO placeholders.
+pub fn build_toi_stub(info: &CommitInfo) -> String {
+    format!(
+        "### {date} — {subject}\n\
+         \n\
+         **What:** TODO\n\
+         **Why:** TODO\n\
+         **Commit:** {hash}\n\
+         **AI Role:** AI generated stub. Human to complete.\n\
+         **Proof:** TODO\n",
+        date = info.date,
+        subject = info.subject,
+        hash = info.short_hash,
+    )
+}
+
+/// Build a POA Commit Log table row for `info`.
+pub fn build_poa_row(info: &CommitInfo) -> String {
+    format!(
+        "| {} | {} | {} |",
+        info.short_hash, info.date, info.subject
+    )
+}
+
+/// Insert `stub` into `toi` content after `## Entries` and before the first `### ` entry.
+/// Returns `None` if the insertion anchor is not found.
+pub fn insert_toi_stub(toi: &str, stub: &str) -> Option<String> {
+    // Find "## Entries" line, then find the next "### " line after it.
+    let entries_pos = toi.find("\n## Entries\n")
+        .or_else(|| if toi.starts_with("## Entries\n") { Some(0) } else { None })?;
+    let after_entries = entries_pos + "\n## Entries\n".len();
+    // Find the first "### " after the ## Entries header
+    let first_entry = toi[after_entries..].find("\n### ")
+        .map(|p| after_entries + p + 1) // +1 to land on the '#'
+        .or_else(|| {
+            // No existing entries yet — insert at end of section
+            toi[after_entries..].find("\n\n---").map(|p| after_entries + p)
+        });
+    let insert_at = first_entry.unwrap_or(toi.len());
+    let mut result = String::with_capacity(toi.len() + stub.len() + 2);
+    result.push_str(&toi[..insert_at]);
+    result.push_str(stub);
+    result.push('\n');
+    result.push_str(&toi[insert_at..]);
+    Some(result)
+}
+
+/// Append `row` to the POA Commit Log table (before the blank line after the last `|` row).
+/// Returns `None` if `## Commit Log` section is not found.
+pub fn insert_poa_row(poa: &str, row: &str) -> Option<String> {
+    let log_pos = poa.find("\n## Commit Log\n")?;
+    // Find the last pipe-row in or after the Commit Log section
+    let section_start = log_pos + 1;
+    let section = &poa[section_start..];
+    // Walk lines to find the last '|'-prefixed line in this section
+    let mut last_pipe_end: Option<usize> = None;
+    let mut pos = 0;
+    for line in section.lines() {
+        let line_end = pos + line.len();
+        if line.trim_start().starts_with('|') {
+            last_pipe_end = Some(section_start + line_end);
+        }
+        pos = line_end + 1; // +1 for '\n'
+    }
+    let insert_at = last_pipe_end?;
+    let mut result = String::with_capacity(poa.len() + row.len() + 2);
+    result.push_str(&poa[..insert_at]);
+    result.push('\n');
+    result.push_str(row);
+    result.push_str(&poa[insert_at..]);
+    Some(result)
+}
+
+/// `generate-toi` entry point. Reads last commit, checks idempotency,
+/// writes TOI stub + POA row. Returns 0 on success, 1 on error.
+pub fn generate_toi(root: &Path) -> i32 {
+    let info = match get_last_commit(root) {
+        Some(i) => i,
+        None => {
+            eprintln!("generate-toi: could not read git log");
+            return 1;
+        }
+    };
+
+    let toi_path = root.join("TIMELINE_OF_INVENTION.md");
+    let poa_path = root.join("PROOF_OF_ARTIFACTS.md");
+
+    let toi = match std::fs::read_to_string(&toi_path) {
+        Ok(s) => s,
+        Err(e) => { eprintln!("generate-toi: cannot read TOI: {e}"); return 1; }
+    };
+    let poa = match std::fs::read_to_string(&poa_path) {
+        Ok(s) => s,
+        Err(e) => { eprintln!("generate-toi: cannot read POA: {e}"); return 1; }
+    };
+
+    // Idempotent: skip if hash already present
+    let hash_in_toi = extract_toi_hashes(&toi).contains(&info.short_hash.as_str());
+    let hash_in_poa = extract_poa_hashes(&poa).contains(&info.short_hash.as_str());
+
+    if hash_in_toi && hash_in_poa {
+        println!("generate-toi: {} already documented — nothing to do", info.short_hash);
+        return 0;
+    }
+
+    if !hash_in_toi {
+        let stub = build_toi_stub(&info);
+        match insert_toi_stub(&toi, &stub) {
+            Some(updated) => {
+                if let Err(e) = std::fs::write(&toi_path, &updated) {
+                    eprintln!("generate-toi: cannot write TOI: {e}");
+                    return 1;
+                }
+                println!("generate-toi: added TOI stub for {} ({})", info.short_hash, info.subject);
+            }
+            None => {
+                eprintln!("generate-toi: could not find '## Entries' section in TOI");
+                return 1;
+            }
+        }
+    }
+
+    if !hash_in_poa {
+        let row = build_poa_row(&info);
+        match insert_poa_row(&poa, &row) {
+            Some(updated) => {
+                if let Err(e) = std::fs::write(&poa_path, &updated) {
+                    eprintln!("generate-toi: cannot write POA: {e}");
+                    return 1;
+                }
+                println!("generate-toi: added POA row for {} ({})", info.short_hash, info.subject);
+            }
+            None => {
+                eprintln!("generate-toi: could not find '## Commit Log' section in POA");
+                return 1;
+            }
+        }
+    }
+
+    0
+}
+
 /// Extract commit hashes from TOI `**Commit:**` lines.
 /// Returns only tokens that are 7-40 char all-hex (valid git short/full hashes).
 /// Skips prose words and short numeric tokens.
@@ -1093,5 +1275,206 @@ Commands here.
     fn f30_passes_on_real_repo() {
         // This tests the actual validator against the real repo
         assert_eq!(f30(), 0, "f30 should pass on the real repository");
+    }
+
+    // =========================================================================
+    // build_toi_stub
+    // =========================================================================
+
+    #[test]
+    fn toi_stub_structure() {
+        let info = CommitInfo {
+            short_hash: "abc1234".to_string(),
+            date: "2026-04-03".to_string(),
+            subject: "Add feature X".to_string(),
+        };
+        let stub = build_toi_stub(&info);
+        assert!(stub.starts_with("### 2026-04-03 — Add feature X\n"));
+        assert!(stub.contains("**What:** TODO"));
+        assert!(stub.contains("**Why:** TODO"));
+        assert!(stub.contains("**Commit:** abc1234"));
+        assert!(stub.contains("**AI Role:**"));
+        assert!(stub.contains("**Proof:** TODO"));
+    }
+
+    #[test]
+    fn toi_stub_ai_role_passes_validation() {
+        // The generated stub must pass validate_ai_roles — no TODO placeholder
+        // that would fail Stage 10. The stub uses a minimal valid placeholder.
+        let info = CommitInfo {
+            short_hash: "abc1234".to_string(),
+            date: "2026-04-03".to_string(),
+            subject: "Test".to_string(),
+        };
+        let stub = build_toi_stub(&info);
+        let (total, valid, _) = validate_ai_roles(&stub);
+        assert_eq!(total, 1, "stub must have exactly one AI Role entry");
+        assert_eq!(valid, 1, "stub AI Role must pass validation (has 'ai ' and 'human')");
+    }
+
+    #[test]
+    fn toi_stub_fields_parseable_by_extract() {
+        // build_toi_stub must produce a Commit line that extract_toi_hashes can find
+        let info = CommitInfo {
+            short_hash: "abc1234".to_string(),
+            date: "2026-04-03".to_string(),
+            subject: "Test".to_string(),
+        };
+        let stub = build_toi_stub(&info);
+        assert_eq!(extract_toi_hashes(&stub), vec!["abc1234"]);
+    }
+
+    #[test]
+    fn toi_stub_date_parseable() {
+        let info = CommitInfo {
+            short_hash: "abc1234".to_string(),
+            date: "2026-04-03".to_string(),
+            subject: "Test".to_string(),
+        };
+        let stub = build_toi_stub(&info);
+        assert_eq!(extract_toi_dates(&stub), vec!["2026-04-03"]);
+    }
+
+    // =========================================================================
+    // build_poa_row
+    // =========================================================================
+
+    #[test]
+    fn poa_row_structure() {
+        let info = CommitInfo {
+            short_hash: "abc1234".to_string(),
+            date: "2026-04-03".to_string(),
+            subject: "Add feature X".to_string(),
+        };
+        let row = build_poa_row(&info);
+        assert_eq!(row, "| abc1234 | 2026-04-03 | Add feature X |");
+    }
+
+    #[test]
+    fn poa_row_parseable_by_extract() {
+        // build_poa_row must produce a line that extract_poa_hashes can parse
+        let info = CommitInfo {
+            short_hash: "abc1234".to_string(),
+            date: "2026-04-03".to_string(),
+            subject: "Test".to_string(),
+        };
+        let row = build_poa_row(&info);
+        assert_eq!(extract_poa_hashes(&row), vec!["abc1234"]);
+    }
+
+    // =========================================================================
+    // insert_toi_stub
+    // =========================================================================
+
+    #[test]
+    fn insert_toi_stub_before_first_entry() {
+        let toi = "# Title\n\n## Entries\n\n### 2026-04-02 — Old Entry\n\n**What:** old\n";
+        let stub = "### 2026-04-03 — New\n\n**What:** new\n";
+        let result = insert_toi_stub(toi, stub).unwrap();
+        // New entry should appear before old entry
+        let new_pos = result.find("### 2026-04-03").unwrap();
+        let old_pos = result.find("### 2026-04-02").unwrap();
+        assert!(new_pos < old_pos, "new stub should be before existing entry");
+    }
+
+    #[test]
+    fn insert_toi_stub_preserves_all_content() {
+        let toi = "# Title\n\n## Entries\n\n### 2026-04-02 — Old\n\n**What:** old\n";
+        let stub = "### 2026-04-03 — New\n\n**What:** new\n";
+        let result = insert_toi_stub(toi, stub).unwrap();
+        assert!(result.contains("# Title"));
+        assert!(result.contains("## Entries"));
+        assert!(result.contains("### 2026-04-03 — New"));
+        assert!(result.contains("### 2026-04-02 — Old"));
+    }
+
+    #[test]
+    fn insert_toi_stub_no_existing_entries() {
+        let toi = "# Title\n\n## Entries\n\n";
+        let stub = "### 2026-04-03 — New\n\n**What:** new\n";
+        let result = insert_toi_stub(toi, stub).unwrap();
+        assert!(result.contains("### 2026-04-03 — New"));
+    }
+
+    #[test]
+    fn insert_toi_stub_missing_entries_section() {
+        let toi = "# Title\n\nNo entries section here.\n";
+        let stub = "### 2026-04-03 — New\n";
+        assert!(insert_toi_stub(toi, stub).is_none());
+    }
+
+    #[test]
+    fn insert_toi_stub_roundtrip_parseable() {
+        // After insertion, the new hash must be extractable from the TOI
+        let toi = "# Title\n\n## Entries\n\n### 2026-04-02 — Old\n\n**Commit:** def5678\n";
+        let info = CommitInfo {
+            short_hash: "abc1234".to_string(),
+            date: "2026-04-03".to_string(),
+            subject: "New".to_string(),
+        };
+        let stub = build_toi_stub(&info);
+        let result = insert_toi_stub(toi, &stub).unwrap();
+        let hashes = extract_toi_hashes(&result);
+        assert!(hashes.contains(&"abc1234"), "new hash must be extractable after insertion");
+        assert!(hashes.contains(&"def5678"), "old hash must still be present");
+    }
+
+    // =========================================================================
+    // insert_poa_row
+    // =========================================================================
+
+    #[test]
+    fn insert_poa_row_appends_after_last_table_row() {
+        let poa = "# POA\n\n## Commit Log\n\n| Hash | Date | Desc |\n|------|------|------|\n| abc1234 | 2026-04-02 | old |\n\n## Next Section\n";
+        let row = "| def5678 | 2026-04-03 | new |";
+        let result = insert_poa_row(poa, row).unwrap();
+        let old_pos = result.find("abc1234").unwrap();
+        let new_pos = result.find("def5678").unwrap();
+        assert!(old_pos < new_pos, "new row should appear after old row");
+        assert!(result.contains("## Next Section"), "subsequent content preserved");
+    }
+
+    #[test]
+    fn insert_poa_row_parseable_after_insert() {
+        let poa = "# POA\n\n## Commit Log\n\n| Hash | Date | Desc |\n|------|------|------|\n| abc1234 | 2026-04-02 | old |\n\n## Live\n";
+        let info = CommitInfo {
+            short_hash: "def5678".to_string(),
+            date: "2026-04-03".to_string(),
+            subject: "new".to_string(),
+        };
+        let row = build_poa_row(&info);
+        let result = insert_poa_row(poa, &row).unwrap();
+        let hashes = extract_poa_hashes(&result);
+        assert!(hashes.contains(&"abc1234"));
+        assert!(hashes.contains(&"def5678"));
+    }
+
+    #[test]
+    fn insert_poa_row_missing_commit_log_section() {
+        let poa = "# POA\n\nNo commit log here.\n";
+        let row = "| abc1234 | 2026-04-03 | desc |";
+        assert!(insert_poa_row(poa, row).is_none());
+    }
+
+    // =========================================================================
+    // generate_toi integration (real repo)
+    // =========================================================================
+
+    #[test]
+    fn generate_toi_idempotent_on_real_repo() {
+        // Running generate_toi on the real repo should find all hashes already
+        // documented and return 0 without modifying any files.
+        let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+        let toi_before = std::fs::read_to_string(root.join("TIMELINE_OF_INVENTION.md")).unwrap();
+        let poa_before = std::fs::read_to_string(root.join("PROOF_OF_ARTIFACTS.md")).unwrap();
+
+        let result = generate_toi(root);
+        assert_eq!(result, 0, "generate_toi should succeed on a fully-documented repo");
+
+        let toi_after = std::fs::read_to_string(root.join("TIMELINE_OF_INVENTION.md")).unwrap();
+        let poa_after = std::fs::read_to_string(root.join("PROOF_OF_ARTIFACTS.md")).unwrap();
+
+        assert_eq!(toi_before, toi_after, "TOI should be unchanged — last commit already documented");
+        assert_eq!(poa_before, poa_after, "POA should be unchanged — last commit already documented");
     }
 }
