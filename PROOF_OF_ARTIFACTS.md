@@ -128,6 +128,8 @@ TRIPLE SIMS: 3/3 passes OK
 | 7fd287a | 2026-03-31 | Pin TOI hashes, add POA commit log, complete self-documentation |
 | 2c03770 | 2026-04-02 | Expand f30 validator: hash format, date ordering, cross-doc consistency |
 | be91115 | 2026-04-02 | Pin commit hash 2c03770 in TOI, add POA commit log entry |
+| 6ce4142 | 2026-04-02 | Update all docs: cross-link cochranblock.org, expand README |
+| 5754bf5 | 2026-04-03 | Add NanoSign as first-class AI supply chain provenance mechanism |
 
 ## Live Examples
 
