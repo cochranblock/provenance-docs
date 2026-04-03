@@ -43,6 +43,8 @@ Executive Order 14028 (Improving the Nation's Cybersecurity) mandates software s
 
 A developer who copy-pastes AI output into a codebase is introducing an unaudited component with no bill of materials, no version history, and no vulnerability disclosure process. This is a supply chain attack vector hiding in plain sight.
 
+The same gap exists for AI model files themselves. A `.safetensors` or `.gguf` downloaded from the internet ships unsigned — no integrity verification, no tamper detection. Provenance Docs addresses this through NanoSign (Section 4.4): 36 bytes appended to any model file, providing self-verifying integrity via BLAKE3 hashing.
+
 ## 2. The Solution: Two Documents, One Workflow
 
 Provenance Docs introduces two machine-readable, human-auditable documents that live in the repository alongside the code they describe.
@@ -168,9 +170,33 @@ TOI and POA map directly to existing Contract Data Requirements List items:
 
 NTIA's Software Bill of Materials (SBOM) framework tracks third-party components. Provenance Docs extends this to track AI-generated components — treating AI output as a supply chain input that requires attribution, versioning, and audit.
 
+NanoSign model hashes (Section 4.4) integrate directly into SBOM: each AI model used during development gets a 32-byte BLAKE3 hash that appears in the software bill of materials alongside traditional dependency entries. This closes the gap where AI models are treated as tools rather than auditable supply chain inputs.
+
 ### 4.3 FAR/DFARS Compliance
 
 The "AI Role" field directly addresses the provenance question in DFARS 252.227-7014. When a contract requires identification of privately-developed versus government-funded software, the TOI provides line-item attribution of human versus AI contribution at the commit level.
+
+### 4.4 NanoSign — AI Model Integrity in 36 Bytes
+
+AI model files ship unsigned. A developer downloads a `.safetensors` or `.gguf` from the internet and trusts it blindly — no integrity check, no tamper detection, no chain of custody. Existing signing solutions (GPG, X.509, sigstore) require infrastructure and ceremony. Nobody uses them for model files.
+
+[NanoSign](https://github.com/cochranblock/nanosign) solves this by appending 36 bytes to any model file:
+
+| Component | Size | Content |
+|-----------|------|---------|
+| Magic | 4 bytes | `NSIG` (ASCII) |
+| Hash | 32 bytes | BLAKE3 hash of everything before these 36 bytes |
+
+The file becomes self-verifying. No external registry. No key server. No setup. BLAKE3 runs at memory bandwidth (~6 GB/s) — a 4GB model verifies in under 1 second.
+
+**How NanoSign extends Provenance Docs:**
+
+1. **Model integrity** — tamper detection on AI weights. Any modification to the model file (poisoning, truncation, corruption) changes the hash. Verification is one function call.
+2. **Chain of custody** — a sled-backed registry tracks who baked what model, when, and what hash it produced. This is the AI model equivalent of the TOI: a dated, attributable record.
+3. **Supply chain security** — before any inference call, verify the model came from a trusted source. This addresses the EO 14028 gap where AI models are supply chain inputs with no provenance tracking.
+4. **SBOM integration** — model BLAKE3 hashes appear in the software bill of materials alongside traditional dependency entries. A model is a dependency. It should be inventoried like one.
+
+NanoSign is format-agnostic (safetensors, GGUF, ONNX, PyTorch, nanobyte), backward-compatible (existing tools ignore trailing bytes), and implemented in 3 lines of Rust with a single dependency (`blake3`). The reference implementation lives in the kova augment engine and is deployed across the IRONHIVE distributed inference cluster.
 
 ## 5. Proposed SBIR Work
 
@@ -180,6 +206,7 @@ The "AI Role" field directly addresses the provenance question in DFARS 252.227-
 2. **Build the tooling** — CLI tool that generates TOI entries from git commits, integrates with CI/CD pipelines, and validates POA completeness (POA structural validation is already implemented in `provenance-docs` via `f30` and enforced across 12 repos through exopack test binaries)
 3. **Pilot with 3-5 federal contractors** — validate the framework against real CDRL deliveries and security audits
 4. **Publish compliance mapping** — formal mapping to DFARS, NIST SSDF, EO 14028, and SBOM requirements
+5. **NanoSign standardization** — publish NanoSign as a standalone crate and propose the 36-byte model signing format as an AI supply chain security standard for SBOM integration
 
 ### Phase II ($500K-$1.5M, 24 months)
 

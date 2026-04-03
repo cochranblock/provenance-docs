@@ -10,6 +10,14 @@
 
 ## Entries
 
+### 2026-04-03 — NanoSign Integration: AI Model Signing as Provenance Mechanism
+
+**What:** Added NanoSign to the provenance-docs whitepaper as a first-class AI supply chain security mechanism. New Section 4.4 documents the 36-byte model signing standard (4-byte NSIG magic + 32-byte BLAKE3 hash). Updated Section 1.3 to reference NanoSign as the solution to unsigned AI model files. Updated Section 4.2 (SBOM Enhancement) to show how model hashes integrate into software bills of materials. Added NanoSign standardization to Phase I SBIR work plan. NanoSign provides four provenance capabilities: model integrity (tamper detection), chain of custody (sled registry), supply chain security (pre-inference verification), and SBOM integration (model hashes as dependency entries).
+**Why:** AI model files are supply chain inputs with zero provenance tracking. EO 14028 mandates supply chain transparency but no framework addresses AI models. NanoSign — already implemented in kova and deployed on the IRONHIVE cluster — closes this gap in 36 bytes with no infrastructure requirements, making it suitable for classified environments.
+**Commit:** See git log
+**AI Role:** AI drafted whitepaper Section 4.4 and cross-references from the NanoSign spec (kova/docs/NANOSIGN.md). Human designed NanoSign, directed which provenance concepts to link (SBOM, EO 14028, chain of custody), and validated all technical claims against the reference implementation.
+**Proof:** [WHITEPAPER.md](WHITEPAPER.md) Section 4.4, Section 1.3, Section 4.2, Section 5
+
 ### 2026-04-02 — f30 Validator Expansion: Hash Validation, Date Ordering, Cross-Doc Consistency
 
 **What:** Expanded f30 from 13 checks to 28. Added Stage 4 (TOI commit hash format validation — skips prose, enforces 7-40 char hex), Stage 5 (TOI date ordering — entries must be reverse-chronological), Stage 6 (cross-document consistency — every POA Commit Log hash must appear in TOI). Fixed three audit gaps: added missing TOI entry for 7fd287a, fixed README repo count from 14 to 16, added Validation row to whitepaper Section 2.2 POA spec table.
