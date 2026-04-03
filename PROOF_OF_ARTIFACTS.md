@@ -26,6 +26,17 @@ flowchart TD
     Audit --> Patent[Patent Documentation]
     Audit --> SBOM[SBOM Enhancement]
 
+    subgraph "NanoSign — AI Model Provenance"
+        ModelFile[AI Model File]
+        Sign[nanosign sign — append 36 bytes]
+        Verify[nanosign verify — BLAKE3 check]
+        Registry[sled registry — who baked what when]
+        ModelFile --> Sign
+        Sign --> Verify
+        Verify --> Registry
+        Registry --> SBOM
+    end
+
     subgraph "provenance-docs binary"
         Main[provenance-docs — main binary]
         Lib[lib.rs — f30 doc validator]
@@ -84,6 +95,10 @@ provenance-docs is a CLI framework with no GUI. Visual proof is the terminal out
   OK  POA section ## Validation
   OK  POA section ## Screenshots
   OK  POA section ## How to Verify
+  OK  TOI hash 5754bf5
+  OK  TOI hash 2c03770
+  OK  TOI hash be91115
+  OK  TOI hash 6ce4142
   OK  TOI hash 7fd287a
   OK  TOI hash dc2bcfe
   OK  TOI hash 4f9459a
@@ -101,7 +116,11 @@ provenance-docs is a CLI framework with no GUI. Visual proof is the terminal out
   OK  POA hash 4f9459a found in TOI
   OK  POA hash dc2bcfe found in TOI
   OK  POA hash 7fd287a found in TOI
-  OK  Cross-doc: 8 POA hashes verified against TOI
+  OK  POA hash 2c03770 found in TOI
+  OK  POA hash be91115 found in TOI
+  OK  POA hash 6ce4142 found in TOI
+  OK  POA hash 5754bf5 found in TOI
+  OK  Cross-doc: 12 POA hashes verified against TOI
 All checks passed
 ```
 
@@ -130,6 +149,7 @@ TRIPLE SIMS: 3/3 passes OK
 | be91115 | 2026-04-02 | Pin commit hash 2c03770 in TOI, add POA commit log entry |
 | 6ce4142 | 2026-04-02 | Update all docs: cross-link cochranblock.org, expand README |
 | 5754bf5 | 2026-04-03 | Add NanoSign as first-class AI supply chain provenance mechanism |
+| 3116cf0 | 2026-04-03 | Pin NanoSign commit, add missing POA entries, fold 6ce4142 into TOI |
 
 ## Live Examples
 

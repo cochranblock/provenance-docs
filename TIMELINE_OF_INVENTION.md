@@ -10,13 +10,13 @@
 
 ## Entries
 
-### 2026-04-03 — NanoSign Integration: AI Model Signing as Provenance Mechanism
+### 2026-04-03 — NanoSign as Provenance Mechanism + P23 Triple Lens Validation
 
-**What:** Added NanoSign to the provenance-docs whitepaper as a first-class AI supply chain security mechanism. New Section 4.4 documents the 36-byte model signing standard (4-byte NSIG magic + 32-byte BLAKE3 hash). Updated Section 1.3 to reference NanoSign as the solution to unsigned AI model files. Updated Section 4.2 (SBOM Enhancement) to show how model hashes integrate into software bills of materials. Added NanoSign standardization to Phase I SBIR work plan. NanoSign provides four provenance capabilities: model integrity (tamper detection), chain of custody (sled registry), supply chain security (pre-inference verification), and SBOM integration (model hashes as dependency entries).
-**Why:** AI model files are supply chain inputs with zero provenance tracking. EO 14028 mandates supply chain transparency but no framework addresses AI models. NanoSign — already implemented in kova and deployed on the IRONHIVE cluster — closes this gap in 36 bytes with no infrastructure requirements, making it suitable for classified environments.
-**Commit:** 5754bf5
-**AI Role:** AI drafted whitepaper Section 4.4 and cross-references from the NanoSign spec (kova/docs/NANOSIGN.md). Human designed NanoSign, directed which provenance concepts to link (SBOM, EO 14028, chain of custody), and validated all technical claims against the reference implementation.
-**Proof:** [WHITEPAPER.md](WHITEPAPER.md) Section 4.4, Section 1.3, Section 4.2, Section 5
+**What:** Integrated NanoSign into provenance-docs as a first-class AI supply chain security mechanism. Whitepaper Section 4.4 documents the 36-byte model signing standard (4-byte NSIG magic + 32-byte BLAKE3 hash) with four provenance capabilities: model integrity, chain of custody, supply chain security, SBOM integration. Added P23 Triple Lens validation to Section 4.4 — NanoSign was evaluated using three independent analyses (optimist/pessimist/paranoia) across the IRONHIVE cluster per the P23 protocol (kova/docs/KOVA_BLUEPRINT.md Section 10). Synthesis: high-confidence for integrity, origin authentication deferred to future extension. Updated POA architecture diagram with NanoSign subgraph showing sign/verify/registry/SBOM flow. Updated POA screenshots to current f30 output (12 cross-doc hashes). Updated Sections 1.3, 4.2, Phase I plan.
+**Why:** AI model files are supply chain inputs with zero provenance tracking. EO 14028 mandates supply chain transparency but no framework addresses AI models. NanoSign closes this gap in 36 bytes. P23 validation ensures the design was stress-tested from three perspectives before adoption — not just accepted on first impression.
+**Commit:** 5754bf5, 3116cf0
+**AI Role:** AI drafted whitepaper Section 4.4, P23 validation paragraph, POA architecture updates, and cross-references from kova/docs/NANOSIGN.md and kova/docs/KOVA_BLUEPRINT.md. Human designed NanoSign, created the P23 protocol, directed which provenance concepts to link (SBOM, EO 14028, chain of custody), and validated all technical claims against the reference implementation.
+**Proof:** [WHITEPAPER.md](WHITEPAPER.md) Section 4.4 (NanoSign + P23), [PROOF_OF_ARTIFACTS.md](PROOF_OF_ARTIFACTS.md) Architecture diagram
 
 ### 2026-04-02 — f30 Validator Expansion: Hash Validation, Date Ordering, Cross-Doc Consistency
 

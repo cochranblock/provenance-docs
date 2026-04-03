@@ -198,6 +198,8 @@ The file becomes self-verifying. No external registry. No key server. No setup. 
 
 NanoSign is format-agnostic (safetensors, GGUF, ONNX, PyTorch, nanobyte), backward-compatible (existing tools ignore trailing bytes), and implemented in 3 lines of Rust with a single dependency (`blake3`). The reference implementation lives in the kova augment engine and is deployed across the IRONHIVE distributed inference cluster.
 
+**P23 validation:** The NanoSign design was evaluated using the P23 Triple Lens Research Protocol — three independent analyses (optimist, pessimist, paranoia) run in parallel across the IRONHIVE cluster, then synthesized into a single assessment. The optimist lens confirmed the 36-byte format solves the unsigned-model problem with zero infrastructure. The pessimist lens identified that BLAKE3 alone does not authenticate origin (who signed, only what was signed). The paranoia lens flagged model-poisoning attacks where an adversary re-signs a tampered file. Synthesis: NanoSign is high-confidence for integrity verification; origin authentication requires a future extension (registry or public key binding). This is documented and accepted — integrity first, authentication second.
+
 ## 5. Proposed SBIR Work
 
 ### Phase I ($50K-$275K, 6-12 months)
