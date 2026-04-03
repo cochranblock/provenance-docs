@@ -126,6 +126,7 @@ TRIPLE SIMS: 3/3 passes OK
 | 4f9459a | 2026-03-29 | Whitepaper expansion: 16 repos, Section 3.5 enforcement |
 | dc2bcfe | 2026-03-30 | Supply chain audit, hot reload, file cleanup |
 | 7fd287a | 2026-03-31 | Pin TOI hashes, add POA commit log, complete self-documentation |
+| 2c03770 | 2026-04-02 | Expand f30 validator: hash format, date ordering, cross-doc consistency |
 
 ## Live Examples
 
