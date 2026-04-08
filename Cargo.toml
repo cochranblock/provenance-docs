@@ -26,5 +26,5 @@ required-features = ["tests"]
 
 [dependencies]
 nix = { version = "0.31", features = ["signal", "process"] }
-exopack = { path = "../exopack", optional = true, features = ["triple_sims"] }
+exopack = { git = "https://github.com/cochranblock/exopack", optional = true, features = ["triple_sims"] }
 tokio = { version = "1", features = ["rt", "macros"], optional = true }
