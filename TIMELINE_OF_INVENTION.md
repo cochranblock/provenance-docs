@@ -8,6 +8,64 @@
 
 ---
 
+## Human Revelations — Invented Techniques
+
+*Novel ideas that came from human insight, not AI suggestion. These are original contributions to the field.*
+
+### Provenance Documentation Framework — TOI + POA (March 2026)
+
+**Invention:** A two-document framework (Timeline of Invention + Proof of Artifacts) that creates a commit-integrated chain of custody for AI-piloted software development — proving which decisions were human and which executions were AI, with programmatic enforcement via test binary.
+
+**The Problem:** AI-generated code has a trust problem. Anyone can prompt an LLM and commit the output. There's no standard way to prove that a human directed the development, verified the output, and made the architectural decisions. Federal acquisition (DFARS 252.227-7014) requires documentation of authorship, but no framework addresses AI-assisted code.
+
+**The Insight:** The problem isn't AI writing code — it's the inability to prove a human was in the loop. Two documents solve this: (1) a Timeline of Invention with dated entries showing what was built, why, and what the AI did vs. what the human directed, and (2) a Proof of Artifacts showing build output, metrics, and verification commands that anyone can run. Together they create a chain of custody: human decision -> AI execution -> human verification -> commit.
+
+**The Technique:**
+1. Timeline of Invention (TOI): reverse-chronological entries with Date, What, Why, AI Role, Commit hash
+2. Proof of Artifacts (POA): build stats, binary sizes, test results, QA rounds, verification commands
+3. `f30` validator: programmatic checks that TOI has required fields, POA has required sections, commit hashes are valid hex, dates are reverse-chronological, POA commit log matches TOI entries
+4. Enforcement: test binary runs f30 through Triple Sims (3x) — documentation compliance is CI-gated
+5. Deployed across 16 repositories with consistent format
+
+**Result:** Every CochranBlock repository has machine-verifiable provenance documentation. The test binary enforces compliance — you can't ship if your TOI is incomplete or your POA metrics are stale. Federal auditors can verify every claim by running the commands in the POA.
+
+**Named:** Provenance Docs Framework
+**Commit:** `55b2eac` (whitepaper), `783564d` (exopack integration)
+**Origin:** Michael Cochran's 13 years in defense acquisition — every weapons system has a Technical Data Package (TDP) that traces design decisions to requirements. AI-assisted software has no equivalent. This framework is the TDP for AI-piloted code. Structured as an SBIR proposal because it solves a real federal procurement gap.
+
+### f30 Self-Validating Documentation (March 2026)
+
+**Invention:** A documentation validator that runs as part of the production binary — the binary validates its own documentation on every execution, checking that commit hashes are real, dates are ordered, cross-document references are consistent, and every POA claim matches actual build output.
+
+**The Problem:** Documentation rots. Metrics go stale. Commit hashes reference deleted branches. "Build produces 2.1MB binary" written when the binary was 2.1MB, now it's 3.4MB and nobody updated the doc. Manual doc reviews catch some of this, but nobody reviews docs on every commit.
+
+**The Insight:** If the binary can validate its own documentation, then documentation accuracy is enforced at the same level as compilation and tests. Stale metrics, bad commit hashes, and mis-ordered dates become CI failures — not review-meeting findings.
+
+**The Technique:**
+1. Stage 1: TOI field validation — every entry has Date, What, Commit, AI Role
+2. Stage 2: POA section validation — required sections exist
+3. Stage 3: Required file existence (TOI, POA, README, UNLICENSE)
+4. Stage 4: Commit hash format validation — 7-40 char hex, no placeholders
+5. Stage 5: Date ordering — entries must be reverse-chronological
+6. Stage 6: Cross-document consistency — every POA commit hash must appear in TOI
+7. Stage 7: Git history hash verification
+8. Stage 8: POA Commit Log completeness vs git log
+9. Stage 9: Bidirectional TOI-POA cross-check
+
+**Result:** 28 validation checks per run. Documentation accuracy is a CI gate. The framework that defines provenance standards enforces them on itself — it's self-hosting.
+
+**Named:** f30 Documentation Validator
+**Commit:** `783564d` (initial), `2c03770` (expansion to 28 checks)
+**Origin:** "Eat your own dog food." If the provenance framework can't validate its own provenance, it's not credible for federal acquisition.
+
+### 2026-04-08 — Human Revelations Documentation Pass
+
+**What:** Documented novel human-invented techniques across the full CochranBlock portfolio. Added Human Revelations section with Provenance Docs Framework and f30 Documentation Validator.
+**Commit:** See git log
+**AI Role:** AI formatted and wrote the sections. Human identified which techniques were genuinely novel, provided the origin stories, and directed the documentation pass.
+
+---
+
 ## Entries
 
 ### 2026-04-03 — P23 triple lens: readjust fire
