@@ -58,15 +58,47 @@
 **Commit:** `783564d` (initial), `2c03770` (expansion to 28 checks)
 **Origin:** "Eat your own dog food." If the provenance framework can't validate its own provenance, it's not credible for federal acquisition.
 
-### 2026-04-08 — Human Revelations Documentation Pass
+### Human Revelations Documentation Pass (April 2026)
 
 **What:** Documented novel human-invented techniques across the full CochranBlock portfolio. Added Human Revelations section with Provenance Docs Framework and f30 Documentation Validator.
-**Commit:** See git log
+**Commit:** 65bc9f2
 **AI Role:** AI formatted and wrote the sections. Human identified which techniques were genuinely novel, provided the origin stories, and directed the documentation pass.
 
 ---
 
 ## Entries
+
+### 2026-04-09 — Documentation refresh: pin hashes, add missing entries, update POA metrics
+
+**What:** Pinned all TOI commit hashes (65bc9f2, a167bae, 23d78e9). Added missing TOI entries for generate-toi subcommand and exopack decouple. Updated POA: binary sizes (431 KB / 500 KB stripped), 108 unit tests, added named techniques (generate-toi, f30 self-validator). Filled in auto-generated TOI stubs. Added missing POA Commit Log rows.
+**Why:** f30 Stage 8 failed on 2 missing commits (a167bae, 23d78e9). POA binary sizes were stale (346 KB → 431 KB). No entry documented the generate-toi subcommand — the single largest code addition since framework inception (400 lines, 15 tests).
+**Commit:** a167bae, 23d78e9, 65bc9f2
+**AI Role:** AI updated all doc sections, verified metrics against actual build output. Human directed the documentation pass scope and verified accuracy.
+**Proof:** `cargo run` — all checks passed; `cargo test --lib` — 108 tests pass
+
+### 2026-04-08 — Human Revelations section added to Timeline of Invention
+
+**What:** Added Human Revelations section to TOI documenting novel human-invented techniques: Provenance Docs Framework and f30 Self-Validating Documentation. Each entry includes problem statement, insight, technique steps, result, and origin story.
+**Why:** TOI entries documented *what* was built but not *which ideas were novel*. Human Revelations creates an explicit record of original contributions vs. AI execution, strengthening the provenance chain for patent and SBIR purposes.
+**Commit:** 65bc9f2
+**AI Role:** AI formatted and wrote the sections. Human identified which techniques were genuinely novel, provided the origin stories, and directed the documentation pass.
+**Proof:** TIMELINE_OF_INVENTION.md — Human Revelations section with 2 named inventions
+
+### 2026-04-07 — Decouple exopack: path dependency → git
+
+**What:** Changed exopack dependency from local path (`../exopack`) to git (`https://github.com/cochranblock/exopack`). Removes filesystem coupling — provenance-docs builds standalone without requiring exopack checked out as a sibling directory.
+**Why:** Path deps break `cargo build` for anyone who clones only provenance-docs. Git dep enables independent builds and CI without a monorepo layout.
+**Commit:** 23d78e9
+**AI Role:** AI made the Cargo.toml change. Human directed the decoupling decision.
+**Proof:** `cargo build --release` — builds from git dep
+
+### 2026-04-03 — Implement generate-toi subcommand (BACKLOG #1)
+
+**What:** Added `cargo run -- generate-toi` subcommand. Reads `git log -1`, inserts a TOI stub entry before the first existing entry, and appends a POA Commit Log row. Idempotent: no-ops if the latest commit hash is already present. Stub uses minimal valid AI Role placeholder so Stage 10 validation passes without manual edits. Added 15 unit tests covering stub structure, insertion logic, roundtrip parseability, and idempotency.
+**Why:** The self-documentation loop was the #1 usability gap (BACKLOG item #1). Every commit broke f30 Stage 8 until docs were manually updated. generate-toi closes the loop — run it after every commit and Stage 8 passes immediately.
+**Commit:** a167bae
+**AI Role:** AI implemented the subcommand, parser, insertion logic, and all 15 unit tests. Human designed the stub format, defined the idempotency contract, and validated that the Stage 10 AI Role placeholder was acceptable.
+**Proof:** `cargo test --lib` — 108 tests pass; `cargo run -- generate-toi` — inserts stub and POA row
 
 ### 2026-04-03 — P23 triple lens: readjust fire
 

@@ -53,11 +53,12 @@ flowchart TD
 
 | Metric | Value |
 |--------|-------|
-| `provenance-docs` release (stripped) | 346 KB |
-| `provenance-docs-test` release (stripped) | 432 KB |
+| `provenance-docs` release (stripped) | 431 KB |
+| `provenance-docs-test` release (stripped) | 500 KB |
 | Rust edition | 2024 |
+| Unit tests | 108 |
 | External dependencies (default) | nix (POSIX signals for hot reload) |
-| External dependencies (tests feature) | exopack, tokio |
+| External dependencies (tests feature) | exopack (git dep), tokio |
 | Supply chain audit | [govdocs/SUPPLY_CHAIN_AUDIT.md](../govdocs/SUPPLY_CHAIN_AUDIT.md) |
 | Cloud dependencies | Zero |
 | Infrastructure cost | $0 — runs anywhere with `rustc` |
@@ -142,6 +143,20 @@ TRIPLE SIMS: 3/3 passes OK
 | aacefa0 | 2026-04-03 | NanoSign origin auth roadmap, stable POA screenshots, "12 of 16" fix |
 | e691e4f | 2026-04-03 | Fix validate_ai_roles prefix bug, stash coverage, pin aacefa0 in TOI/POA |
 | 2d6f83f | 2026-04-03 | P23 triple lens: readjust fire |
+| a167bae | 2026-04-03 | Implement generate-toi subcommand (BACKLOG #1) |
+| 23d78e9 | 2026-04-07 | Decouple exopack: path dep → git |
+| 65bc9f2 | 2026-04-08 | add Human Revelations section to Timeline of Invention |
+
+## Named Techniques
+
+| Technique | What | Commit |
+|-----------|------|--------|
+| Provenance Docs Framework | Two-document (TOI + POA) chain of custody for AI-piloted development | 55b2eac |
+| f30 Self-Validating Documentation | Binary validates its own docs: hash format, date ordering, cross-doc consistency (28 checks) | 783564d, 2c03770 |
+| generate-toi | Subcommand auto-inserts TOI stub + POA row from `git log -1`, closes the self-documentation loop | a167bae |
+| NanoSign | 36-byte AI model signing standard (4-byte NSIG magic + 32-byte BLAKE3 hash) for supply chain provenance | 5754bf5 |
+| TRIPLE SIMS | Run f30 3x via exopack — documentation compliance is CI-gated | 783564d |
+| Two-binary model | Same crate produces main binary + test binary; test binary IS the CI pipeline | 783564d |
 
 ## Live Examples
 
@@ -155,7 +170,7 @@ Every repository at [github.com/cochranblock](https://github.com/cochranblock) c
 # Clone and build provenance-docs
 git clone https://github.com/cochranblock/provenance-docs
 cd provenance-docs
-cargo build --release                              # 346 KB main binary
+cargo build --release                              # 431 KB main binary
 cargo run --bin provenance-docs-test --features tests  # TRIPLE SIMS 3/3
 
 # Verify any other CochranBlock repo
