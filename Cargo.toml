@@ -30,3 +30,47 @@ required-features = ["tests"]
 nix = { version = "0.31", features = ["signal", "process"] }
 exopack = { version = "0.2", optional = true, features = ["triple_sims"] }
 tokio = { version = "1", features = ["rt", "macros"], optional = true }
+
+[profile.diamond]
+inherits = "release"
+
+# opt-level = 3 — maximum compiler pressure, all LLVM optimizations on.
+# "s" or "z" trades speed for smaller binary. Pick "z" if size is king,
+# "3" if you want both (with LTO + codegen-units=1 you get both).
+opt-level = 3
+
+# lto = "fat" — full cross-crate link-time optimization. "thin" is graphite,
+# "fat" is the tectonic pressure that monomorphized generics dedupe under.
+# Expect 2-10x longer build time. That is the pressure.
+lto = "fat"
+
+# codegen-units = 1 — one compilation unit = one crystal. Multiple codegen-units
+# are fracture planes where LLVM can't inline across. One unit is monolithic.
+codegen-units = 1
+
+# strip = true — remove debug symbols from the final binary. Symbols don't run,
+# they just ride along taking up space.
+strip = true
+
+# panic = "abort" — if your program panics, die. Don't unwind the stack.
+# Cuts the unwinding machinery out of the binary. Only use this if you
+# don't depend on panic catching (most CLIs and single-purpose binaries
+# don't). Saves 50-300 KB typical.
+panic = "abort"
+
+# overflow-checks = false — integer overflow checks off in release. The
+# compiler trusts your arithmetic. If you need checked arithmetic, use
+# checked_add / saturating_add explicitly at the call site.
+overflow-checks = false
+
+# debug = false — no debug info embedded. DWARF sections are heavy.
+debug = false
+
+# incremental = false — incremental compilation creates cache files and
+# fracture planes. Turn it off for release.
+incremental = false
+
+# split-debuginfo = "off" — don't emit a separate .dSYM or .pdb.
+# If you want crash symbols later, ship them separately via your release
+# artifact pipeline, don't couple them to the binary.
+split-debuginfo = "off"

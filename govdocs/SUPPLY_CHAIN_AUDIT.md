@@ -56,7 +56,7 @@ provenance-docs v0.1.0 (0 unsafe)
 | provenance-docs 0.1.0 | 0/0 | 0/0 | None |
 | exopack 0.1.0 | 0/0 | 0/0 | None |
 | tokio 1.50.0 | 25/30 | 1051/2909 | Expected — async runtime |
-| syn 2.0.117 | 0/0 | 87/87 | Expected — parser optimization |
+| syn 2.0.117 | 0/0 | 87/87 | Expected — parser speed |
 | proc-macro2 1.0.106 | 0/0 | 14/14 | Expected — compiler FFI |
 | pin-project-lite 0.2.17 | 0/0 | 11/191 | Expected — Pin projections |
 | unicode-ident 1.0.24 | 0/0 | 4/4 | Expected — lookup tables |
