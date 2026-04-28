@@ -68,6 +68,14 @@
 
 ## Entries
 
+### 2026-04-08 — add Human Revelations section to Timeline of Invention
+
+**What:** TODO
+**Why:** TODO
+**Commit:** 65bc9f2
+**AI Role:** AI generated stub. Human to complete.
+**Proof:** TODO
+
 ### 2026-04-03 — P23 triple lens: readjust fire
 
 **What:** P23 Triple Lens analysis readjusted BACKLOG top 3: generate-toi subcommand (breaks self-doc loop), f30 date-vs-git-timestamp validation (closes integrity gap), GitHub Actions CI (closes credibility gap). Updated TOI/POA to document e691e4f and 2d6f83f.

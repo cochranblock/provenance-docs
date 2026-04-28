@@ -3,8 +3,10 @@ name = "provenance-docs"
 version = "0.1.0"
 edition = "2024"
 license = "Unlicense"
+description = "Generate Proof of Artifacts and Timeline of Invention documents from a Rust workspace's git history."
 repository = "https://github.com/cochranblock/provenance-docs"
 homepage = "https://cochranblock.org"
+authors = ["Cochran Block"]
 default-run = "provenance-docs"
 
 [features]
@@ -26,5 +28,5 @@ required-features = ["tests"]
 
 [dependencies]
 nix = { version = "0.31", features = ["signal", "process"] }
-exopack = { git = "https://github.com/cochranblock/exopack", optional = true, features = ["triple_sims"] }
+exopack = { version = "0.2", optional = true, features = ["triple_sims"] }
 tokio = { version = "1", features = ["rt", "macros"], optional = true }

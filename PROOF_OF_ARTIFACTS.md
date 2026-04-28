@@ -142,6 +142,7 @@ TRIPLE SIMS: 3/3 passes OK
 | aacefa0 | 2026-04-03 | NanoSign origin auth roadmap, stable POA screenshots, "12 of 16" fix |
 | e691e4f | 2026-04-03 | Fix validate_ai_roles prefix bug, stash coverage, pin aacefa0 in TOI/POA |
 | 2d6f83f | 2026-04-03 | P23 triple lens: readjust fire |
+| 65bc9f2 | 2026-04-08 | add Human Revelations section to Timeline of Invention |
 
 ## Live Examples
 
